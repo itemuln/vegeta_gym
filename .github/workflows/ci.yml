@@ -2,32 +2,32 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   # Lint and Type Check
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run TypeScript type check
         run: npm run check
-      
+
       - name: Check for build errors
         run: npm run build
 
@@ -35,7 +35,7 @@ jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -50,7 +50,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
+
     env:
       DATABASE_URL: postgresql://postgres:test_password@localhost:5432/gymhub_test
       PGHOST: localhost
@@ -60,26 +60,26 @@ jobs:
       PGDATABASE: gymhub_test
       SESSION_SECRET: test-secret-key-for-ci
       NODE_ENV: test
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build application
         run: npm run build
-      
+
       - name: Push database schema
         run: npm run db:push
-      
+
       - name: Verify database connection
         run: |
           PGPASSWORD=$PGPASSWORD psql -h localhost -U postgres -d gymhub_test -c "SELECT count(*) FROM users;"
@@ -89,14 +89,14 @@ jobs:
   docker-build:
     name: Docker Build Test
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -105,7 +105,7 @@ jobs:
           tags: gym-hub:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Test Docker Compose
         run: |
           docker compose config
@@ -115,25 +115,25 @@ jobs:
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "npm"
+
       - name: Run npm audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
-      
+
       - name: Check for known vulnerabilities
         run: npm audit --json > audit-results.json
         continue-on-error: true
-      
+
       - name: Upload audit results
         uses: actions/upload-artifact@v4
         if: always()
