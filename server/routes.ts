@@ -149,6 +149,19 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, phone, message } = req.body;
+      if (!name || !email || !message) {
+        return res.status(400).json({ error: "Шаардлагатай талбаруудыг бөглөнө үү" });
+      }
+      console.log("Contact form submission:", { name, email, phone, message });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(500).json({ error: "Алдаа" });
+    }
+  });
+
   app.get("/api/investor", async (_req, res) => {
     try {
       const investor = await storage.getInvestorStats();

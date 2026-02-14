@@ -9,7 +9,7 @@ import {
   BarChart3,
   TrendingUp,
   LogOut,
-  Settings,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,16 +27,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { roleLabels } from "@/lib/data";
 
 const mainNav = [
-  { href: "/", label: "Хянах самбар", icon: LayoutDashboard },
-  { href: "/members", label: "Гишүүд", icon: Users },
-  { href: "/trainers", label: "Дасгалжуулагч", icon: Dumbbell },
-  { href: "/branches", label: "Салбарууд", icon: Building2 },
+  { href: "/admin", label: "Хянах самбар", icon: LayoutDashboard, testId: "dashboard" },
+  { href: "/admin/members", label: "Гишүүд", icon: Users, testId: "members" },
+  { href: "/admin/trainers", label: "Дасгалжуулагч", icon: Dumbbell, testId: "trainers" },
+  { href: "/admin/branches", label: "Салбарууд", icon: Building2, testId: "branches" },
 ];
 
 const financeNav = [
-  { href: "/payments", label: "Төлбөр", icon: CreditCard },
-  { href: "/analytics", label: "Аналитик", icon: BarChart3 },
-  { href: "/investor", label: "Хөрөнгө оруулагч", icon: TrendingUp },
+  { href: "/admin/payments", label: "Төлбөр", icon: CreditCard, testId: "payments" },
+  { href: "/admin/analytics", label: "Аналитик", icon: BarChart3, testId: "analytics" },
+  { href: "/admin/investor", label: "Хөрөнгө оруулагч", icon: TrendingUp, testId: "investor" },
 ];
 
 export function AppSidebar() {
@@ -46,7 +46,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <Link href="/">
+        <Link href="/admin">
           <div className="flex items-center gap-3 cursor-pointer" data-testid="sidebar-logo">
             <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
               <Dumbbell className="w-5 h-5 text-primary-foreground" />
@@ -71,7 +71,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={location === item.href}
-                    data-testid={`sidebar-nav-${item.href.replace("/", "") || "dashboard"}`}
+                    data-testid={`sidebar-nav-${item.testId}`}
                   >
                     <Link href={item.href}>
                       <item.icon className="w-4 h-4" />
@@ -93,7 +93,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={location === item.href}
-                    data-testid={`sidebar-nav-${item.href.replace("/", "")}`}
+                    data-testid={`sidebar-nav-${item.testId}`}
                   >
                     <Link href={item.href}>
                       <item.icon className="w-4 h-4" />
@@ -102,6 +102,21 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild data-testid="sidebar-nav-website">
+                  <Link href="/">
+                    <Globe className="w-4 h-4" />
+                    <span>Вебсайт үзэх</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
