@@ -154,6 +154,7 @@ export async function registerRoutes(
       const branches = await storage.getPublicBranches();
       res.json(branches);
     } catch (e) {
+      console.error("Error fetching public branches:", e);
       res.status(500).json({ error: "Алдаа" });
     }
   });
@@ -163,6 +164,7 @@ export async function registerRoutes(
       const trainers = await storage.getPublicTrainers();
       res.json(trainers);
     } catch (e) {
+      console.error("Error fetching public trainers:", e);
       res.status(500).json({ error: "Алдаа" });
     }
   });
@@ -172,6 +174,7 @@ export async function registerRoutes(
       const courses = await storage.getPublicCourses();
       res.json(courses);
     } catch (e) {
+      console.error("Error fetching public courses:", e);
       res.status(500).json({ error: "Алдаа" });
     }
   });
@@ -181,6 +184,7 @@ export async function registerRoutes(
       const stats = await storage.getPublicStats();
       res.json(stats);
     } catch (e) {
+      console.error("Error fetching public stats:", e);
       res.status(500).json({ error: "Алдаа" });
     }
   });

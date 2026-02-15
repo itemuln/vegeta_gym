@@ -9,7 +9,29 @@ A full-stack fitness network management system with a public marketing website a
 ### Prerequisites
 
 - Node.js 20+
-- PostgreSQL database (provided automatically on Replit)
+- Supabase account (free tier available at [supabase.com](https://supabase.com))
+- PostgreSQL database (via Supabase)
+
+### Setup
+
+1. **Clone the repository**
+2. **Create a Supabase project** at [supabase.com](https://supabase.com)
+3. **Copy `.env.example` to `.env`** and fill in your Supabase credentials:
+   ```bash
+   cp .env.example .env
+   ```
+4. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+5. **Push database schema to Supabase**:
+   ```bash
+   npm run db:push
+   ```
+6. **Seed the database** (optional but recommended):
+   ```bash
+   npx tsx server/seed.ts
+   ```
 
 ### Running the App
 
@@ -23,17 +45,16 @@ The application starts on **port 5000**. Both the frontend and backend are serve
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|---|---|---|
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `PGHOST` | Database host | Yes |
-| `PGPORT` | Database port | Yes |
-| `PGUSER` | Database username | Yes |
-| `PGPASSWORD` | Database password | Yes |
-| `PGDATABASE` | Database name | Yes |
-| `SESSION_SECRET` | Secret key for JWT token signing | Yes |
+Create a `.env` file in the project root (copy from `.env.example`):
 
-On Replit, the database variables (`DATABASE_URL`, `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`) are automatically set when you create a PostgreSQL database. `SESSION_SECRET` must be configured in the Secrets tab.
+| Variable | Description | Required | Where to Find |
+|---|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection string from Supabase | Yes | Project Settings → Database → Connection String (use Transaction mode) |
+| `SESSION_SECRET` | Secret key for JWT token signing | Yes | Generate a random string |
+| `SUPABASE_URL` | Supabase project URL | Optional | Project Settings → API → Project URL |
+| `SUPABASE_ANON_KEY` | Supabase anonymous key | Optional | Project Settings → API → anon/public key |
+
+**Note:** The optional Supabase variables are only needed if you want to use Supabase's real-time, storage, or auth features beyond the database.
 
 ---
 
@@ -204,3 +225,41 @@ On first run, the database is automatically seeded with:
 | Annual Revenue | Monthly Revenue x 12 |
 | Monthly Profit | Monthly Revenue - Total Operating Costs |
 | ROI | (Annual Profit / Initial Investment) x 100 |
+
+---
+
+## Deployment
+
+### Using Supabase
+
+This project is designed to work seamlessly with Supabase:
+
+1. **Database**: Already configured to use Supabase PostgreSQL
+2. **Hosting**: Deploy the frontend/backend to:
+   - Vercel
+   - Netlify
+   - Railway
+   - Render
+   - Your own VPS
+
+3. **Environment Variables**: Set the following in your hosting platform:
+   - `DATABASE_URL`
+   - `SESSION_SECRET`
+
+### Benefits of Supabase
+
+- ✅ **Generous Free Tier**: 500MB database, 2GB file storage
+- ✅ **Global CDN**: Fast database connections worldwide
+- ✅ **Real-time Updates**: WebSocket support for live data
+- ✅ **Built-in Authentication**: Can replace custom JWT system
+- ✅ **File Storage**: For trainer/member photos
+- ✅ **Auto-backups**: Daily backups on paid plans
+- ✅ **Dashboard**: Easy database management
+- ✅ **Row-Level Security**: Fine-grained access control
+
+---
+
+## Migration from Replit
+
+If you're migrating from Replit, see [SUPABASE_MIGRATION.md](./SUPABASE_MIGRATION.md) for detailed instructions.
+
