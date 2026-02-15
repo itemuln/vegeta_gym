@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { createHash } from "crypto";
-import { users, branches, members, trainers, payments, attendance, courses } from "@shared/schema";
+import { users, branches, members, trainers, payments, attendance, courses } from "../shared/schema";
 import { count } from "drizzle-orm";
 
 function hashPassword(password: string): string {
@@ -9,7 +9,10 @@ function hashPassword(password: string): string {
 }
 
 export async function seedDatabase() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
   const db = drizzle(pool);
 
   const [existing] = await db.select({ count: count() }).from(users);

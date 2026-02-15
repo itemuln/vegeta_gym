@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createHash } from "crypto";
-import { insertMemberSchema, insertTrainerSchema, insertBranchSchema, insertPaymentSchema, insertCourseSchema, loginSchema } from "@shared/schema";
+import { insertMemberSchema, insertTrainerSchema, insertBranchSchema, insertPaymentSchema, insertCourseSchema, loginSchema } from "../shared/schema";
 
 function hashPassword(password: string): string {
   return createHash("sha256").update(password).digest("hex");
