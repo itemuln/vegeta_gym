@@ -70,6 +70,10 @@ client/src/lib/data.ts           - Mongolian labels and formatters
 - GET /api/analytics
 - GET /api/investor
 - POST /api/contact
+- GET /api/public/branches (public, no auth)
+- GET /api/public/trainers (public, no auth)
+- GET /api/public/courses (public, no auth)
+- GET /api/public/stats (public, no auth)
 
 ## Design Choices
 - Dark mode enabled by default (class "dark" on html element)

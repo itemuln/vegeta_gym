@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createHash } from "crypto";
-import { insertMemberSchema, insertTrainerSchema, insertBranchSchema, insertPaymentSchema, loginSchema } from "@shared/schema";
+import { insertMemberSchema, insertTrainerSchema, insertBranchSchema, insertPaymentSchema, insertCourseSchema, loginSchema } from "@shared/schema";
 
 function hashPassword(password: string): string {
   return createHash("sha256").update(password).digest("hex");
@@ -145,6 +145,42 @@ export async function registerRoutes(
       res.json(analytics);
     } catch (e) {
       console.error("Analytics error:", e);
+      res.status(500).json({ error: "Алдаа" });
+    }
+  });
+
+  app.get("/api/public/branches", async (_req, res) => {
+    try {
+      const branches = await storage.getPublicBranches();
+      res.json(branches);
+    } catch (e) {
+      res.status(500).json({ error: "Алдаа" });
+    }
+  });
+
+  app.get("/api/public/trainers", async (_req, res) => {
+    try {
+      const trainers = await storage.getPublicTrainers();
+      res.json(trainers);
+    } catch (e) {
+      res.status(500).json({ error: "Алдаа" });
+    }
+  });
+
+  app.get("/api/public/courses", async (_req, res) => {
+    try {
+      const courses = await storage.getPublicCourses();
+      res.json(courses);
+    } catch (e) {
+      res.status(500).json({ error: "Алдаа" });
+    }
+  });
+
+  app.get("/api/public/stats", async (_req, res) => {
+    try {
+      const stats = await storage.getPublicStats();
+      res.json(stats);
+    } catch (e) {
       res.status(500).json({ error: "Алдаа" });
     }
   });

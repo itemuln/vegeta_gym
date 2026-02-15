@@ -23,12 +23,20 @@ export interface IStorage {
   getTrainer(id: string): Promise<schema.Trainer | undefined>;
   createTrainer(trainer: schema.InsertTrainer): Promise<schema.Trainer>;
 
+  getCourses(): Promise<schema.Course[]>;
+  createCourse(course: schema.InsertCourse): Promise<schema.Course>;
+
   getPayments(): Promise<any[]>;
   createPayment(payment: schema.InsertPayment): Promise<schema.Payment>;
 
   getDashboardStats(): Promise<any>;
   getAnalytics(): Promise<any>;
   getInvestorStats(): Promise<any>;
+
+  getPublicBranches(): Promise<any[]>;
+  getPublicTrainers(): Promise<any[]>;
+  getPublicCourses(): Promise<any[]>;
+  getPublicStats(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -233,6 +241,69 @@ export class DatabaseStorage implements IStorage {
       monthlyTrend,
       branchRevenue,
       statusBreakdown,
+    };
+  }
+
+  async getCourses() {
+    return await db.select().from(schema.courses).orderBy(schema.courses.sortOrder);
+  }
+
+  async createCourse(course: schema.InsertCourse) {
+    const [created] = await db.insert(schema.courses).values(course).returning();
+    return created;
+  }
+
+  async getPublicBranches() {
+    const branchList = await db.select().from(schema.branches).where(eq(schema.branches.isActive, true));
+    const result = [];
+    for (const b of branchList) {
+      const [mc] = await db.select({ count: count() }).from(schema.members).where(eq(schema.members.branchId, b.id));
+      const [tc] = await db.select({ count: count() }).from(schema.trainers).where(eq(schema.trainers.branchId, b.id));
+      result.push({
+        id: b.id,
+        name: b.name,
+        address: b.address,
+        phone: b.phone,
+        city: b.city,
+        hours: b.hours,
+        features: b.features || [],
+        memberCount: mc?.count || 0,
+        trainerCount: tc?.count || 0,
+      });
+    }
+    return result;
+  }
+
+  async getPublicTrainers() {
+    const trainerList = await db.select().from(schema.trainers).where(eq(schema.trainers.isActive, true));
+    const branchList = await db.select().from(schema.branches);
+    const branchMap = new Map(branchList.map(b => [b.id, b.name]));
+    return trainerList.map(t => ({
+      id: t.id,
+      firstName: t.firstName,
+      lastName: t.lastName,
+      specialty: t.specialty,
+      certification: t.certification,
+      bio: t.bio || "",
+      branchName: branchMap.get(t.branchId) || "",
+    }));
+  }
+
+  async getPublicCourses() {
+    return await db.select().from(schema.courses).where(eq(schema.courses.isActive, true)).orderBy(schema.courses.sortOrder);
+  }
+
+  async getPublicStats() {
+    const [activeMembers] = await db.select({ count: count() }).from(schema.members).where(eq(schema.members.membershipStatus, "active"));
+    const [totalTrainers] = await db.select({ count: count() }).from(schema.trainers).where(eq(schema.trainers.isActive, true));
+    const [totalBranches] = await db.select({ count: count() }).from(schema.branches).where(eq(schema.branches.isActive, true));
+    const [totalCourses] = await db.select({ count: count() }).from(schema.courses).where(eq(schema.courses.isActive, true));
+
+    return {
+      activeMembers: activeMembers?.count || 0,
+      totalTrainers: totalTrainers?.count || 0,
+      totalBranches: totalBranches?.count || 0,
+      weeklyCourses: (totalCourses?.count || 0) * 5,
     };
   }
 

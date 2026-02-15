@@ -25,6 +25,8 @@ export const branches = pgTable("branches", {
   city: text("city").notNull().default("Улаанбаатар"),
   country: text("country").notNull().default("Монгол"),
   operatingCost: decimal("operating_cost", { precision: 12, scale: 2 }).notNull().default("5000000"),
+  hours: text("hours").notNull().default("Даваа - Баасан: 06:00 - 22:00\nБямба - Ням: 08:00 - 20:00"),
+  features: text("features").array().default(sql`ARRAY[]::text[]`),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -54,9 +56,24 @@ export const trainers = pgTable("trainers", {
   email: text("email"),
   certification: text("certification").notNull(),
   specialty: text("specialty").notNull(),
+  bio: text("bio").default(""),
   branchId: varchar("branch_id").notNull(),
   salary: decimal("salary", { precision: 10, scale: 2 }).notNull().default("1500000"),
   isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const courses = pgTable("courses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull().default("Dumbbell"),
+  difficulty: text("difficulty").notNull().default("Бүх түвшин"),
+  duration: text("duration").notNull().default("60 мин"),
+  schedule: text("schedule").notNull().default(""),
+  color: text("color").notNull().default("hsl(0 72% 51%)"),
+  isActive: boolean("is_active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -107,6 +124,8 @@ export const insertBranchSchema = createInsertSchema(branches).pick({
   city: true,
   country: true,
   operatingCost: true,
+  hours: true,
+  features: true,
 });
 
 export const insertMemberSchema = createInsertSchema(members).pick({
@@ -129,8 +148,20 @@ export const insertTrainerSchema = createInsertSchema(trainers).pick({
   email: true,
   certification: true,
   specialty: true,
+  bio: true,
   branchId: true,
   salary: true,
+});
+
+export const insertCourseSchema = createInsertSchema(courses).pick({
+  title: true,
+  description: true,
+  icon: true,
+  difficulty: true,
+  duration: true,
+  schedule: true,
+  color: true,
+  sortOrder: true,
 });
 
 export const insertPaymentSchema = createInsertSchema(payments).pick({
@@ -169,6 +200,8 @@ export type InsertMember = z.infer<typeof insertMemberSchema>;
 export type Member = typeof members.$inferSelect;
 export type InsertTrainer = z.infer<typeof insertTrainerSchema>;
 export type Trainer = typeof trainers.$inferSelect;
+export type InsertCourse = z.infer<typeof insertCourseSchema>;
+export type Course = typeof courses.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Payment = typeof payments.$inferSelect;
 export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
